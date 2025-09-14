@@ -53,7 +53,6 @@ public class cmyk {
     @SubscribeEvent
     public void onBlockBreakSpeed(PlayerEvent.BreakSpeed event) {
         // 获取被破坏的方块
-        BlockState blockState = event.getState();
         Block brokenBlock = blockState.getBlock();
         
         // 获取玩家
