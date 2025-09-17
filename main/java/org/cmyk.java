@@ -88,18 +88,13 @@ public class cmyk {
             event.setNewSpeed(0); // 设置挖掘速度为0，使玩家无法挖掘
         }
     }
-    
-    // 2. 修复commonSetup方法中对不存在的Config类的引用
+
     private void commonSetup(final FMLCommonSetupEvent event) {
         // 移除对不存在的Config类的引用
         
         LOGGER.info("HELLO FROM COMMON SETUP");
     }
-    
-    // 3. 移除对不存在的Config类的导入
-    // import org.config.BlockDurabilityConfig;
-    
-    // 修复onBlockBreak方法中的一致性
+
     @SubscribeEvent
     public void onBlockBreak(BlockEvent.BreakEvent event) {
         Block brokenBlock = event.getState().getBlock();
@@ -107,12 +102,6 @@ public class cmyk {
         if (blockHardness <= 0) {
             return;
         }
-        
-        // 根据文档使用getPlayer()方法获取玩家
-        Player player = event.getPlayer();
-        
-        // 删除这行代码
-        // PLAYER_CURRENT_BLOCK.put(player, brokenBlock);
     }
     // You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent
     @Mod.EventBusSubscriber(modid = MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
