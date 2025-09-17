@@ -27,32 +27,34 @@ public class ToolDurabilityMixin {
                 return;
             }
             
+            // 获取当前耐久值
+            int currentDamage = stack.getDamageValue();
+            // 获取最大耐久值
+            int maxDamage = stack.getMaxDamage();
+            
+            // 如果当前耐久已经为0或工具已经损坏，不阻止原始行为
+            if (currentDamage >= maxDamage - 1) {
+                return;
+            }
+            
             // 获取耐久附魔等级
             int unbreakingLevel = stack.getEnchantmentLevel(Enchantments.UNBREAKING);
             
             // 检查是否是首次调用hurt方法（非连锁调用）
             if (amount == 1 && player != null) {
-                // 移除对不存在方法的调用
-                // Block currentBlock = cmyk.getPlayerCurrentBlock(player);
-                
                 // 由于无法获取当前方块和配置，直接使用默认值10
                 int originalTotalDamage = 10;
+    
+                // 每个耐久等级减少1点消耗，但至少保持1点消耗
+                int reducedDamage = Math.max(1, originalTotalDamage - unbreakingLevel);
                 
-                // 移除对不存在方法的调用
-                // cmyk.clearPlayerCurrentBlock(player);
+                // 在消耗耐久前检查工具的剩余耐久
+                int remainingDurability = maxDamage - currentDamage;
+                // 确保消耗的耐久不超过剩余耐久
+                int actualDamage = Math.min(reducedDamage, remainingDurability);
                 
-                // 计算减少的耐久消耗百分比：10% × 附魔等级
-                float reductionPercentage = unbreakingLevel * 0.1F;
-                // 确保减少的百分比不超过90%（防止出现负消耗）
-                reductionPercentage = Math.min(reductionPercentage, 0.9F);
-                
-                // 计算减少后的消耗
-                int reducedDamage = Math.max(1, (int)(originalTotalDamage * (1 - reductionPercentage)));
-                
-                // 获取当前耐久度（损坏值）
-                int currentDamage = stack.getDamageValue();
-                // 设置新的耐久度值
-                stack.setDamageValue(currentDamage + reducedDamage);
+                // 直接设置损坏值，避免递归调用
+                stack.setDamageValue(currentDamage + actualDamage);
                 
                 // 取消原始的伤害处理
                 cir.setReturnValue(false);

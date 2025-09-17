@@ -52,9 +52,6 @@ public class cmyk {
     // 1. 移除冗余的工具判断条件
     @SubscribeEvent
     public void onBlockBreakSpeed(PlayerEvent.BreakSpeed event) {
-        // 获取被破坏的方块
-        Block brokenBlock = blockState.getBlock();
-        
         // 获取玩家
         Player player = event.getEntity();
         
@@ -67,6 +64,10 @@ public class cmyk {
         }
         
         BlockPos pos = optionalPos.get();
+        // 获取被破坏的方块状态
+        BlockState blockState = level.getBlockState(pos);
+        Block brokenBlock = blockState.getBlock();
+        
         float blockHardness = brokenBlock.defaultBlockState().getDestroySpeed(level, pos);
         
         if (blockHardness <= 0) return;
@@ -78,6 +79,8 @@ public class cmyk {
         if (!heldItem.isDamageableItem()) return;
         
         // 直接检查耐久，不需要再次判断isDamageableItem()
+        // 这里的检查不是耐久消耗的实际基础值，和耐久消耗没有关系
+
         int currentDurability = heldItem.getMaxDamage() - heldItem.getDamageValue();
         int requiredDurability = 9; // 额外消耗的9点耐久值
         
@@ -89,7 +92,6 @@ public class cmyk {
     // 2. 修复commonSetup方法中对不存在的Config类的引用
     private void commonSetup(final FMLCommonSetupEvent event) {
         // 移除对不存在的Config类的引用
-        // event.enqueueWork(BlockDurabilityConfig::loadConfig);
         
         LOGGER.info("HELLO FROM COMMON SETUP");
     }
