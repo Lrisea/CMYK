@@ -1,4 +1,4 @@
-package org.mixin;
+package org.cmyk.durability_overhaul.mixin;
 
 // 修复导入语句
 import net.minecraft.world.item.ItemStack;
@@ -40,7 +40,7 @@ public class ToolDurabilityMixin {
             
             // 检查是否是首次调用hurt方法（非连锁调用）
             if (amount == 1 && player != null) {
-                // 由于无法获取当前方块和配置，直接使用默认值10
+
                 int originalTotalDamage = 10;
     
                 // 每个耐久等级减少1点消耗，但至少保持1点消耗

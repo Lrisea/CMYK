@@ -1,4 +1,4 @@
-package org;
+package org.cmyk.durability_overhaul;
 
 import com.mojang.logging.LogUtils;
 import net.minecraft.client.Minecraft;
@@ -31,7 +31,7 @@ import java.util.Optional;
 @Mod(CMYKDurabilityOverhaul.MODID)
 public class CMYKDurabilityOverhaul {
     // 修改MODID常量
-    public static final String MODID = "cmyk-durabilityOverhaul";
+    public static final String MODID = "cmyk_durability_overhaul";
     private static final Logger LOGGER = LogUtils.getLogger();
 
     public CMYKDurabilityOverhaul() {

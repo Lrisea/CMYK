@@ -1,4 +1,4 @@
-package org.config;
+package org.cmyk.durability_overhaul.config;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -19,7 +19,7 @@ import java.util.Map;
 
 public class BlockDurabilityConfig {
     // 修改配置路径引用
-    private static final Path CONFIG_PATH = FMLPaths.CONFIGDIR.get().resolve("cmyk-durabilityOverhaul/block_durability_config.json");
+    private static final Path CONFIG_PATH = FMLPaths.CONFIGDIR.get().resolve("cmyk_durability_overhaul/block_durability_config.json");
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final String DEFAULT_CONFIG_RESOURCE = "defaultConfig/default_block_durability_config.json";
     private static Map<String, Integer> blockDurabilityCosts = new HashMap<>();

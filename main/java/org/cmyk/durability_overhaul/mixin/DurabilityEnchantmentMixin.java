@@ -1,4 +1,4 @@
-package org.mixin;
+package org.cmyk.durability_overhaul.mixin;
 
 import net.minecraft.world.item.enchantment.DigDurabilityEnchantment;
 import org.spongepowered.asm.mixin.Mixin;
