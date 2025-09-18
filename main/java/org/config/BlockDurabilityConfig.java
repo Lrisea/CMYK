@@ -18,7 +18,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class BlockDurabilityConfig {
-    private static final Path CONFIG_PATH = FMLPaths.CONFIGDIR.get().resolve("cmyk/block_durability_config.json");
+    // 修改配置路径引用
+    private static final Path CONFIG_PATH = FMLPaths.CONFIGDIR.get().resolve("cmyk-durabilityOverhaul/block_durability_config.json");
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final String DEFAULT_CONFIG_RESOURCE = "defaultConfig/default_block_durability_config.json";
     private static Map<String, Integer> blockDurabilityCosts = new HashMap<>();

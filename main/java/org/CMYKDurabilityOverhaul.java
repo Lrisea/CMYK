@@ -28,14 +28,13 @@ import org.slf4j.Logger;
 import java.util.Optional;
 
 // The value here should match an entry in the META-INF/mods.toml file
-@Mod(cmyk.MODID)
-public class cmyk {
-    // Define mod id in a common place for everything to reference
-    public static final String MODID = "cmyk";
-    // Directly reference a slf4j logger
+@Mod(CMYKDurabilityOverhaul.MODID)
+public class CMYKDurabilityOverhaul {
+    // 修改MODID常量
+    public static final String MODID = "cmyk-durabilityOverhaul";
     private static final Logger LOGGER = LogUtils.getLogger();
 
-    public cmyk() {
+    public CMYKDurabilityOverhaul() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
         // Register the commonSetup method for modloading
