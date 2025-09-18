@@ -23,7 +23,6 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.RegisterEvent;
-import org.config.BlockDurabilityConfig;
 import org.slf4j.Logger;
 // 在导入部分添加
 import java.util.Optional;
@@ -110,6 +109,9 @@ public class cmyk {
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event) {
             // Some client setup code
+            event.enqueueWork(() -> {
+
+            });
             LOGGER.info("HELLO FROM CLIENT SETUP");
         }
     }
