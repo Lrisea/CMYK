@@ -28,10 +28,9 @@ import org.slf4j.Logger;
 import java.util.Optional;
 
 // The value here should match an entry in the META-INF/mods.toml file
-@Mod(CMYKDurabilityOverhaul.MODID)
+@Mod("cmyk_durability_overhaul")
 public class CMYKDurabilityOverhaul {
-    // Define mod id in a common place for everything to reference
-    public static final String MODID = "cmyk.durability_overhaul";
+    public static final String MODID = "cmyk_durability_overhaul";
     // Directly reference a slf4j logger
     private static final Logger LOGGER = LogUtils.getLogger();
 
