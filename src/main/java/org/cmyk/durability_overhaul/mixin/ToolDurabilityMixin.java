@@ -5,7 +5,14 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
+// 在导入部分添加
+import org.config.BlockDurabilityConfig;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
+import org.cmyk.durability_overhaul.util.BlockTracker;
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -16,7 +23,12 @@ import org.cmyk.durability_overhaul.CMYKDurabilityOverhaul;
 @Mixin(ItemStack.class)
 public class ToolDurabilityMixin {
 
-    @Inject(method = {"hurt"}, at = @At("HEAD"), cancellable = true, require = 0)
+    @Inject(
+        method = "hurt",
+        at = @At("HEAD"),
+        cancellable = true,
+        require = 1  // 必须找到该方法，否则编译报错（更安全）
+    )
     private void onHurt(int amount, RandomSource random, ServerPlayer player, CallbackInfoReturnable<Boolean> cir) {
         try {
             // 获取当前ItemStack实例
@@ -42,9 +54,15 @@ public class ToolDurabilityMixin {
             
             // 检查是否是首次调用hurt方法（非连锁调用）
             if (amount == 1 && player != null) {
-                // 由于无法获取当前方块和配置，直接使用默认值10
-                int originalTotalDamage = 10;
-    
+                // 使用BlockTracker获取玩家正在破坏的方块
+                Block targetedBlock = BlockTracker.getTargetBlock(player);
+                
+                // 获取方块的耐久消耗值（如果无法获取方块则使用默认值）
+                int originalTotalDamage = 10; // 默认消耗值
+                if (targetedBlock != null) {
+                    originalTotalDamage = BlockDurabilityConfig.getDurabilityCost(targetedBlock);
+                }
+                
                 // 每个耐久等级减少1点消耗，但至少保持1点消耗
                 int reducedDamage = Math.max(1, originalTotalDamage - unbreakingLevel);
                 

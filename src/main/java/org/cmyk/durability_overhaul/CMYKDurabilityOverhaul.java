@@ -8,11 +8,11 @@ import net.minecraft.world.level.Level;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.level.BlockEvent;
-import net.minecraftforge.event.level.BlockEvent.BreakEvent;
 import net.minecraftforge.event.level.NoteBlockEvent.Play;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -24,7 +24,9 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.RegisterEvent;
 import org.slf4j.Logger;
-// 在导入部分添加
+import org.cmyk.durability_overhaul.util.BlockTracker;
+import org.config.BlockDurabilityConfig; // 添加导入
+
 import java.util.Optional;
 
 // The value here should match an entry in the META-INF/mods.toml file
@@ -36,14 +38,20 @@ public class CMYKDurabilityOverhaul {
 
     public CMYKDurabilityOverhaul() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
-
+    
         // Register the commonSetup method for modloading
         modEventBus.addListener(this::commonSetup);
-
+    
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
         
-        // 注意：Config文件似乎已被删除，这里移除了对Config的引用
+        // 只在构造函数中加载配置一次
+        BlockDurabilityConfig.loadConfig();
+    }
+    
+    private void commonSetup(final FMLCommonSetupEvent event) {
+        LOGGER.info("HELLO FROM COMMON SETUP");
+        // commonSetup中不再重复加载配置
     }
 
     // 实现让玩家破坏方块时额外消耗9点工具耐久的功能，增加方块黑名单（没有硬度的方块不消耗耐久）
@@ -87,20 +95,21 @@ public class CMYKDurabilityOverhaul {
         }
     }
 
-    private void commonSetup(final FMLCommonSetupEvent event) {
-        // 移除对不存在的Config类的引用
-        
-        LOGGER.info("HELLO FROM COMMON SETUP");
-    }
-
+    // 添加方块破坏事件监听器
     @SubscribeEvent
     public void onBlockBreak(BlockEvent.BreakEvent event) {
+        Player player = event.getPlayer();
         Block brokenBlock = event.getState().getBlock();
         float blockHardness = brokenBlock.defaultBlockState().getDestroySpeed(event.getLevel(), event.getPos());
+        
         if (blockHardness <= 0) {
             return;
         }
+        
+        // 记录玩家正在破坏的方块
+        BlockTracker.setTargetBlock(player, brokenBlock);
     }
+    
     // You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent
     @Mod.EventBusSubscriber(modid = MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
     public static class ClientModEvents {
