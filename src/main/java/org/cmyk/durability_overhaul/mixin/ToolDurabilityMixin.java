@@ -1,24 +1,17 @@
 package org.cmyk.durability_overhaul.mixin;
 
-// 修复导入语句
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
-// 在导入部分添加
-import org.config.BlockDurabilityConfig;
-import net.minecraft.world.level.Level;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.HitResult;
+import org.config.BlockDurabilityConfig;
 import org.cmyk.durability_overhaul.util.BlockTracker;
-
+import org.cmyk.durability_overhaul.CMYKDurabilityOverhaul;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-// 修复导入语句格式
-import org.cmyk.durability_overhaul.CMYKDurabilityOverhaul;
 
 @Mixin(ItemStack.class)
 public class ToolDurabilityMixin {
@@ -36,6 +29,12 @@ public class ToolDurabilityMixin {
             
             // 检查物品是否可被破坏
             if (stack.isEmpty() || !stack.isDamageableItem()) {
+                return;
+            }
+            
+            // 检查工具是否在黑名单中
+            if (CMYKDurabilityOverhaul.isToolBlacklisted(stack)) {
+                // 如果工具在黑名单中，不修改其耐久消耗行为
                 return;
             }
             

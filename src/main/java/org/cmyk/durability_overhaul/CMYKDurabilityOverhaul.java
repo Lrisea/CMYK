@@ -27,7 +27,9 @@ import org.slf4j.Logger;
 import org.cmyk.durability_overhaul.util.BlockTracker;
 import org.config.BlockDurabilityConfig; // 添加导入
 
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod("cmyk_durability_overhaul")
@@ -35,6 +37,9 @@ public class CMYKDurabilityOverhaul {
     public static final String MODID = "cmyk_durability_overhaul";
     // Directly reference a slf4j logger
     private static final Logger LOGGER = LogUtils.getLogger();
+    
+    // 工具黑名单集合
+    private static final Set<String> TOOL_BLACKLIST = new HashSet<>();
 
     public CMYKDurabilityOverhaul() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
@@ -52,6 +57,27 @@ public class CMYKDurabilityOverhaul {
     private void commonSetup(final FMLCommonSetupEvent event) {
         LOGGER.info("HELLO FROM COMMON SETUP");
         // commonSetup中不再重复加载配置
+        
+        // 初始化工具黑名单
+        initializeToolBlacklist();
+        LOGGER.info("Tool blacklist initialized with {} items", TOOL_BLACKLIST.size());
+    }
+    
+    private void initializeToolBlacklist() {
+        // 添加默认的黑名单工具
+        TOOL_BLACKLIST.add("fishing_rod"); // 钓鱼竿
+        TOOL_BLACKLIST.add("carrot_on_a_stick"); // 胡萝卜钓鱼竿
+        TOOL_BLACKLIST.add("warped_fungus_on_a_stick"); // 诡异菌钓鱼竿
+        TOOL_BLACKLIST.add("apotheosis:potion_charm"); // 药水护符
+    }
+    
+    // 检查工具是否在黑名单中
+    public static boolean isToolBlacklisted(ItemStack stack) {
+        if (stack == null || stack.getItem() == null) {
+            return false;
+        }
+        String itemName = stack.getItem().toString();
+        return TOOL_BLACKLIST.contains(itemName);
     }
 
     // 实现让玩家破坏方块时额外消耗9点工具耐久的功能，增加方块黑名单（没有硬度的方块不消耗耐久）
@@ -81,6 +107,12 @@ public class CMYKDurabilityOverhaul {
         // 获取玩家手持物品
         ItemStack heldItem = player.getMainHandItem();
         
+        // 检查工具是否在黑名单中
+        if (isToolBlacklisted(heldItem)) {
+            // 如果工具在黑名单中，不应用额外的耐久消耗
+            return;
+        }
+        
         // 保留宽松的工具判断，只检查物品是否可损坏
         if (!heldItem.isDamageableItem()) return;
         
@@ -103,6 +135,15 @@ public class CMYKDurabilityOverhaul {
         float blockHardness = brokenBlock.defaultBlockState().getDestroySpeed(event.getLevel(), event.getPos());
         
         if (blockHardness <= 0) {
+            return;
+        }
+        
+        // 获取玩家手持物品
+        ItemStack heldItem = player.getMainHandItem();
+        
+        // 检查工具是否在黑名单中
+        if (isToolBlacklisted(heldItem)) {
+            // 如果工具在黑名单中，不记录目标方块
             return;
         }
         
