@@ -1,4 +1,4 @@
-package org.cmyk.durability_overhaul.util;
+package cmyk.util;
 
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.entity.player.Player;

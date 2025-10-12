@@ -15,13 +15,16 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class BlockDurabilityConfig {
     private static final Path CONFIG_PATH = FMLPaths.CONFIGDIR.get().resolve("cmyk/block_durability_config.json");
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final String DEFAULT_CONFIG_RESOURCE = "defaultConfig/default_block_durability_config.json";
     private static Map<String, Integer> blockDurabilityCosts = new HashMap<>();
+    private static Set<String> toolBlacklist = new HashSet<>();
     private static int defaultCost = 10;
 
     public static void loadConfig() {
@@ -58,6 +61,14 @@ public class BlockDurabilityConfig {
                 JsonObject blockCosts = config.getAsJsonObject("blockDurabilityCosts");
                 for (String blockId : blockCosts.keySet()) {
                     blockDurabilityCosts.put(blockId, blockCosts.get(blockId).getAsInt());
+                }
+            }
+            
+            // 读取工具黑名单
+            if (config.has("toolBlacklist")) {
+                JsonObject toolBlacklistJson = config.getAsJsonObject("toolBlacklist");
+                for (String toolId : toolBlacklistJson.keySet()) {
+                    toolBlacklist.add(toolId);
                 }
             }
         } catch (IOException e) {
@@ -109,6 +120,15 @@ public class BlockDurabilityConfig {
             
             config.add("blockDurabilityCosts", blockCosts);
             
+            // 添加默认工具黑名单
+            JsonObject toolBlacklistJson = new JsonObject();
+            toolBlacklistJson.addProperty("minecraft:fishing_rod", true);
+            toolBlacklistJson.addProperty("minecraft:carrot_on_a_stick", true);
+            toolBlacklistJson.addProperty("minecraft:warped_fungus_on_a_stick", true);
+            toolBlacklistJson.addProperty("apotheosis:potion_charm", true);
+            
+            config.add("toolBlacklist", toolBlacklistJson);
+            
             // 写入配置文件
             Files.writeString(CONFIG_PATH, GSON.toJson(config), StandardCharsets.UTF_8);
         } catch (IOException e) {
@@ -120,6 +140,12 @@ public class BlockDurabilityConfig {
     private static void initMinimalDefaultConfig() {
         // 设置最小默认值，确保功能正常
         blockDurabilityCosts.clear();
+        toolBlacklist.clear();
+        // 添加默认工具黑名单
+        toolBlacklist.add("minecraft:fishing_rod");
+        toolBlacklist.add("minecraft:carrot_on_a_stick");
+        toolBlacklist.add("minecraft:warped_fungus_on_a_stick");
+        toolBlacklist.add("apotheosis:potion_charm");
         defaultCost = 10;
     }
     
@@ -130,5 +156,10 @@ public class BlockDurabilityConfig {
             return blockDurabilityCosts.get(blockId.toString());
         }
         return defaultCost;
+    }
+    
+    // 检查工具是否在黑名单中
+    public static boolean isToolBlacklisted(String toolId) {
+        return toolBlacklist.contains(toolId);
     }
 }

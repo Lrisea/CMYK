@@ -38,5 +38,11 @@
     "#minecraft:mineable/shovel": 10,
     "#minecraft:logs": 15
   },
+  "toolBlacklist": {
+    "minecraft:fishing_rod": true,
+    "minecraft:carrot_on_a_stick": true,
+    "minecraft:warped_fungus_on_a_stick": true,
+    "apotheosis:potion_charm": true
+  },
   "defaultCost": 10
 }

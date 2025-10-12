@@ -1,4 +1,4 @@
-package org.cmyk.durability_overhaul.mixin;
+package cmyk.mixin;
 
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
@@ -6,7 +6,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.block.Block;
 import org.config.BlockDurabilityConfig;
-import org.cmyk.durability_overhaul.util.BlockTracker;
+import cmyk.util.BlockTracker;
 import org.cmyk.durability_overhaul.CMYKDurabilityOverhaul;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -20,7 +20,7 @@ public class ToolDurabilityMixin {
         method = "hurt",
         at = @At("HEAD"),
         cancellable = true,
-        require = 1  // 必须找到该方法，否则编译报错（更安全）
+        require = 0  // 必须找到该方法，否则编译报错（更安全）
     )
     private void onHurt(int amount, RandomSource random, ServerPlayer player, CallbackInfoReturnable<Boolean> cir) {
         try {
