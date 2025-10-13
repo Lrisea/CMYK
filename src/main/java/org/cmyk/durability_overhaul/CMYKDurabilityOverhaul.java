@@ -1,38 +1,41 @@
 package org.cmyk.durability_overhaul;
 
 import com.mojang.logging.LogUtils;
-import net.minecraft.client.Minecraft;
+import net.minecraft.world.food.FoodData;
+import net.minecraft.world.food.FoodProperties;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.Level;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.level.BlockEvent;
-import net.minecraftforge.event.level.NoteBlockEvent.Play;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.registries.RegisterEvent;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.slf4j.Logger;
 import cmyk.util.BlockTracker;
 import org.config.BlockDurabilityConfig;
+import cmyk.config.FoodConfig;
+import cmyk.config.CommonConfig;
+import net.minecraftforge.fml.ModLoadingContext;
+import net.minecraftforge.fml.config.ModConfig;
 
 import java.util.Optional;
 
 // The value here should match an entry in the META-INF/mods.toml file
-@Mod("cmyk_durability_overhaul")
+@Mod("cmyk")
 public class CMYKDurabilityOverhaul {
-    public static final String MODID = "cmyk_durability_overhaul";
+    public static final String MODID = "cmyk";
     // Directly reference a slf4j logger
     private static final Logger LOGGER = LogUtils.getLogger();
 
@@ -47,11 +50,15 @@ public class CMYKDurabilityOverhaul {
         
         // 只在构造函数中加载配置一次
         BlockDurabilityConfig.loadConfig();
+
+        // Register Forge COMMON config (generates toml in config directory)
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, CommonConfig.SPEC);
     }
     
     private void commonSetup(final FMLCommonSetupEvent event) {
         LOGGER.info("HELLO FROM COMMON SETUP");
         LOGGER.info("CMYK Durability Overhaul mod initialized");
+        FoodConfig.loadConfig();
     }
     
     // 检查工具是否在黑名单中
@@ -145,4 +152,62 @@ public class CMYKDurabilityOverhaul {
             LOGGER.info("HELLO FROM CLIENT SETUP");
         }
     }
+
+    @SubscribeEvent
+    public void onFoodEaten(LivingEntityUseItemEvent.Finish event) {
+        if (!(event.getEntity() instanceof Player)) {
+            return;
+        }
+
+        Player player = (Player) event.getEntity();
+        ItemStack foodStack = event.getItem();
+        Item foodItem = foodStack.getItem();
+
+        FoodProperties props = foodStack.getFoodProperties(player);
+        if (ForgeRegistries.ITEMS.getKey(foodItem) == null) {
+            return;
+        }
+
+        String foodId = ForgeRegistries.ITEMS.getKey(foodItem).toString();
+
+        FoodConfig.FoodProperty foodProperty = FoodConfig.getFoodProperty(foodId);
+        if (foodProperty != null && props != null) {
+            // 仅当原生是食物时，按“原值-原版+配置”方式覆写，避免与南瓜种子混入的逻辑重复
+            FoodData stats = player.getFoodData();
+            stats.setFoodLevel(stats.getFoodLevel() - props.getNutrition() + foodProperty.getHunger());
+            stats.setSaturation(stats.getSaturationLevel() - props.getSaturationModifier() + foodProperty.getSaturation());
+        }
+
+        // Apply cooldown after eating, if enabled
+        if (CommonConfig.ENABLE_FOOD_COOLDOWN.get()) {
+            Integer manualCooldown = (foodProperty != null) ? foodProperty.getCooldown() : null;
+            int cooldownTicks;
+            if (manualCooldown != null && manualCooldown > 0) {
+                cooldownTicks = manualCooldown;
+            } else {
+                // Auto: prefer native props when present; otherwise, fallback to configured values if available
+                if (props != null) {
+                    int nutrition = props.getNutrition();
+                    float saturationGain = nutrition * props.getSaturationModifier() * 2.0F;
+                    cooldownTicks = Math.max(0, Math.round((nutrition + saturationGain) * 20f));
+                } else if (foodProperty != null) {
+                    int nutrition = Math.max(0, foodProperty.getHunger());
+                    float saturationGain = Math.max(0f, foodProperty.getSaturation());
+                    cooldownTicks = Math.max(0, Math.round((nutrition + saturationGain) * 20f));
+                } else {
+                    cooldownTicks = 0;
+                }
+            }
+
+            if (cooldownTicks > 0) {
+                // Do not stack manual and auto: we already chose one source. Apply once.
+                player.getCooldowns().addCooldown(foodItem, cooldownTicks);
+            }
+        }
+    }
+
+    // 添加方块破坏事件监听器
+
+    
+
 }
