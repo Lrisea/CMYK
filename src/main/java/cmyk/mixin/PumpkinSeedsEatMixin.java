@@ -29,7 +29,7 @@ public abstract class PumpkinSeedsEatMixin {
     private void cmyk$startEatWhenSneak(Level level, Player player, InteractionHand hand, CallbackInfoReturnable<InteractionResultHolder<ItemStack>> cir) {
         ItemStack stack = player.getItemInHand(hand);
         ResourceLocation key = ForgeRegistries.ITEMS.getKey(stack.getItem());
-        if (key != null && "minecraft:pumpkin_seeds".equals(key.toString()) && !player.isShiftKeyDown()) {
+        if (key != null && "minecraft:pumpkin_seeds".equals(key.toString())) {
             player.startUsingItem(hand);
             cir.setReturnValue(InteractionResultHolder.consume(player.getItemInHand(hand)));
         }
@@ -61,10 +61,9 @@ public abstract class PumpkinSeedsEatMixin {
         ItemStack stack = ctx.getItemInHand();
         ResourceLocation key = ForgeRegistries.ITEMS.getKey(stack.getItem());
         if (key == null || !"minecraft:pumpkin_seeds".equals(key.toString())) return;
-        if (player.isShiftKeyDown()) return; // 潜行时保留原版种植
 
-        player.startUsingItem(ctx.getHand());
-        cir.setReturnValue(InteractionResult.CONSUME);
+        // Return PASS so the game will call Item.use afterwards, where we start using/eating
+        cir.setReturnValue(InteractionResult.PASS);
     }
 
     // 完成进食时应用配置的饱食/饱和，并消耗物品

@@ -14,6 +14,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -204,6 +205,27 @@ public class CMYKDurabilityOverhaul {
                 player.getCooldowns().addCooldown(foodItem, cooldownTicks);
             }
         }
+    }
+
+    // 允许对方块右键时也触发种子进食：禁止方块交互，允许物品交互，并开始使用
+    @SubscribeEvent
+    public void onRightClickBlock(net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock event) {
+        Player player = event.getEntity();
+        ItemStack stack = event.getItemStack();
+        if (stack.isEmpty()) return;
+        Item item = stack.getItem();
+        var key = ForgeRegistries.ITEMS.getKey(item);
+        if (key == null) return;
+        if (!"minecraft:pumpkin_seeds".equals(key.toString())) return;
+
+        // 冷却中则不触发进食逻辑，保持与对空气右键一致（不食用）
+        if (player.getCooldowns().isOnCooldown(item)) {
+            return;
+        }
+
+        event.setUseBlock(net.minecraftforge.eventbus.api.Event.Result.DENY);
+        event.setUseItem(net.minecraftforge.eventbus.api.Event.Result.ALLOW);
+        player.startUsingItem(event.getHand());
     }
 
     // 添加方块破坏事件监听器
