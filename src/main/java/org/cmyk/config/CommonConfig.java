@@ -1,4 +1,4 @@
-package cmyk.config;
+package org.cmyk.config;
 
 import net.minecraftforge.common.ForgeConfigSpec;
 

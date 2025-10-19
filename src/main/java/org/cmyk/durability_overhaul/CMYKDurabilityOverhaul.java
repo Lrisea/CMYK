@@ -24,10 +24,10 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.slf4j.Logger;
-import cmyk.util.BlockTracker;
-import org.config.BlockDurabilityConfig;
-import cmyk.config.FoodConfig;
-import cmyk.config.CommonConfig;
+import org.cmyk.util.BlockTracker;
+import org.cmyk.config.BlockDurabilityConfig;
+import org.cmyk.foods.FoodConfig;
+import org.cmyk.config.CommonConfig;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.config.ModConfig;
 
@@ -216,13 +216,14 @@ public class CMYKDurabilityOverhaul {
         Item item = stack.getItem();
         var key = ForgeRegistries.ITEMS.getKey(item);
         if (key == null) return;
-        if (!"minecraft:pumpkin_seeds".equals(key.toString())) return;
+        String id = key.toString();
+        // 仅对小麦种子保留方块右键进食流程；南瓜种子优先与方块互动
+        if (!"minecraft:wheat_seeds".equals(id)) return;
 
         // 冷却中则不触发进食逻辑，保持与对空气右键一致（不食用）
         if (player.getCooldowns().isOnCooldown(item)) {
             return;
         }
-
         event.setUseBlock(net.minecraftforge.eventbus.api.Event.Result.DENY);
         event.setUseItem(net.minecraftforge.eventbus.api.Event.Result.ALLOW);
         player.startUsingItem(event.getHand());

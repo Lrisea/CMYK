@@ -1,12 +1,12 @@
-package cmyk.mixin;
+package org.cmyk.mixin;
 
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.block.Block;
-import org.config.BlockDurabilityConfig;
-import cmyk.util.BlockTracker;
+import org.cmyk.config.BlockDurabilityConfig;
+import org.cmyk.util.BlockTracker;
 import org.cmyk.durability_overhaul.CMYKDurabilityOverhaul;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

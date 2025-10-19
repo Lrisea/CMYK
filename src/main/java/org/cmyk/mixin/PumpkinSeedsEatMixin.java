@@ -1,6 +1,6 @@
-package cmyk.mixin;
+package org.cmyk.mixin;
 
-import cmyk.config.FoodConfig;
+import org.cmyk.foods.FoodConfig;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -29,7 +29,7 @@ public abstract class PumpkinSeedsEatMixin {
     private void cmyk$startEatWhenSneak(Level level, Player player, InteractionHand hand, CallbackInfoReturnable<InteractionResultHolder<ItemStack>> cir) {
         ItemStack stack = player.getItemInHand(hand);
         ResourceLocation key = ForgeRegistries.ITEMS.getKey(stack.getItem());
-        if (key != null && "minecraft:pumpkin_seeds".equals(key.toString())) {
+        if (key != null && ("minecraft:pumpkin_seeds".equals(key.toString()) || "minecraft:wheat_seeds".equals(key.toString()))) {
             player.startUsingItem(hand);
             cir.setReturnValue(InteractionResultHolder.consume(player.getItemInHand(hand)));
         }
@@ -39,17 +39,22 @@ public abstract class PumpkinSeedsEatMixin {
     @Inject(method = "getUseAnimation", at = @At("HEAD"), cancellable = true)
     private void cmyk$useAnim(ItemStack stack, CallbackInfoReturnable<UseAnim> cir) {
         ResourceLocation key = ForgeRegistries.ITEMS.getKey(stack.getItem());
-        if (key != null && "minecraft:pumpkin_seeds".equals(key.toString())) {
+        if (key != null && ("minecraft:pumpkin_seeds".equals(key.toString()) || "minecraft:wheat_seeds".equals(key.toString()))) {
             cir.setReturnValue(UseAnim.EAT);
         }
     }
 
-    // 进食用时：40 tick = 2 秒
+    // 进食用时：南瓜种子40 tick，小麦种子50 tick
     @Inject(method = "getUseDuration", at = @At("HEAD"), cancellable = true)
     private void cmyk$useDuration(ItemStack stack, CallbackInfoReturnable<Integer> cir) {
         ResourceLocation key = ForgeRegistries.ITEMS.getKey(stack.getItem());
-        if (key != null && "minecraft:pumpkin_seeds".equals(key.toString())) {
-            cir.setReturnValue(40);
+        if (key != null) {
+            String id = key.toString();
+            if ("minecraft:pumpkin_seeds".equals(id)) {
+                cir.setReturnValue(40);
+            } else if ("minecraft:wheat_seeds".equals(id)) {
+                cir.setReturnValue(50);
+            }
         }
     }
 
@@ -60,7 +65,9 @@ public abstract class PumpkinSeedsEatMixin {
         if (player == null) return;
         ItemStack stack = ctx.getItemInHand();
         ResourceLocation key = ForgeRegistries.ITEMS.getKey(stack.getItem());
-        if (key == null || !"minecraft:pumpkin_seeds".equals(key.toString())) return;
+        if (key == null) return;
+        String id = key.toString();
+        if (!"minecraft:pumpkin_seeds".equals(id) && !"minecraft:wheat_seeds".equals(id)) return;
 
         // Return PASS so the game will call Item.use afterwards, where we start using/eating
         cir.setReturnValue(InteractionResult.PASS);
@@ -72,9 +79,11 @@ public abstract class PumpkinSeedsEatMixin {
         if (level.isClientSide || !(entity instanceof Player player)) return;
 
         ResourceLocation key = ForgeRegistries.ITEMS.getKey(stack.getItem());
-        if (key == null || !"minecraft:pumpkin_seeds".equals(key.toString())) return;
+        if (key == null) return;
+        String id = key.toString();
+        if (!"minecraft:pumpkin_seeds".equals(id) && !"minecraft:wheat_seeds".equals(id)) return;
 
-        String foodId = key.toString();
+        String foodId = id;
         FoodConfig.FoodProperty cfg = FoodConfig.getFoodProperty(foodId);
         if (cfg == null) return;
 

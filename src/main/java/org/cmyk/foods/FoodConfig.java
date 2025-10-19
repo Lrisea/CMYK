@@ -1,4 +1,4 @@
-package cmyk.config;
+package org.cmyk.foods;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -43,6 +43,7 @@ public class FoodConfig {
         private int hunger;
         private float saturation;
         private Integer cooldown; // ticks, nullable; if present, overrides auto cooldown
+        private Integer useDuration; // ticks, nullable; if present, overrides default use duration
 
         public FoodProperty(int hunger, float saturation) {
             this.hunger = hunger;
@@ -53,6 +54,13 @@ public class FoodConfig {
             this.hunger = hunger;
             this.saturation = saturation;
             this.cooldown = cooldown;
+        }
+
+        public FoodProperty(int hunger, float saturation, Integer cooldown, Integer useDuration) {
+            this.hunger = hunger;
+            this.saturation = saturation;
+            this.cooldown = cooldown;
+            this.useDuration = useDuration;
         }
 
         public FoodProperty() {}
@@ -67,6 +75,10 @@ public class FoodConfig {
 
         public Integer getCooldown() {
             return cooldown;
+        }
+
+        public Integer getUseDuration() {
+            return useDuration;
         }
     }
 
@@ -87,7 +99,14 @@ public class FoodConfig {
         pumpkinSeeds.put("hunger", 0);
         pumpkinSeeds.put("saturation", 3.0f);
         pumpkinSeeds.put("cooldown", 40);
+        pumpkinSeeds.put("useDuration", 40);
         defaults.put("minecraft:pumpkin_seeds", pumpkinSeeds);
+
+        Map<String, Object> wheatSeeds = new HashMap<>();
+        wheatSeeds.put("hunger", 0);
+        wheatSeeds.put("saturation", 1.0f);
+        wheatSeeds.put("useDuration", 50);
+        defaults.put("minecraft:wheat_seeds", wheatSeeds);
 
         Gson prettyGson = new GsonBuilder().setPrettyPrinting().create();
         try (FileWriter writer = new FileWriter(CONFIG_FILE, StandardCharsets.UTF_8)) {
@@ -98,7 +117,8 @@ public class FoodConfig {
         }
 
         Map<String, FoodProperty> runtimeDefaults = new HashMap<>();
-        runtimeDefaults.put("minecraft:pumpkin_seeds", new FoodProperty(0, 3.0f, 40));
+        runtimeDefaults.put("minecraft:pumpkin_seeds", new FoodProperty(0, 3.0f, 40, 40));
+        runtimeDefaults.put("minecraft:wheat_seeds", new FoodProperty(0, 1.0f, null, 50));
         foodProperties = runtimeDefaults;
     }
 }
