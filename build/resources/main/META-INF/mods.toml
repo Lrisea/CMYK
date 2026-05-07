@@ -1,0 +1,39 @@
+# This is the mods.toml file for Forge mods.
+# TOML spec v0.5.0
+
+modLoader = "javafml" # mandatory
+loaderVersion = "[47,)" # mandatory, matches Forge major version range
+license = "MIT" # mandatory
+
+# Optional metadata
+# issueTrackerURL = ""
+
+[[mods]] # mandatory - defines one mod
+modId = "cmyk" # must match @Mod value
+version = "0.8.16.1"
+displayName = "CMYK"
+authors = "Hikamsg, Lrisea"
+description = '''
+A Minecraft Mod for CMYK Modpack.
+'''
+
+[[dependencies.cmyk]]
+modId = "forge"
+mandatory = true
+versionRange = "[47,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.cmyk]]
+modId = "minecraft"
+mandatory = true
+versionRange = "[1.20.1,1.21)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.cmyk]]
+modId = "tetra"
+mandatory = true
+versionRange = "[6.9.0,)"
+ordering = "NONE"
+side = "BOTH"

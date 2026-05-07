@@ -1,0 +1,18 @@
+{
+    "required": true,
+    "minVersion": "0.8",
+    "package": "cmyk.mixin",
+    "refmap": "cmyk.refmap.json",
+    "mixins": [
+        "ToolDurabilityMixin",
+        "DurabilityEnchantmentMixin",
+        "PumpkinSeedsEatMixin"
+    ],
+    "client": [],
+    "injectors": {
+        "defaultRequire": 1
+    },
+    "overwrites": {
+        "defaultRequire": 1
+    }
+}

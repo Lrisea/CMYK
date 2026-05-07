@@ -3,7 +3,6 @@ package org.cmyk.foods;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.GsonBuilder;
-import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -15,18 +14,20 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.minecraftforge.fml.loading.FMLPaths;
+
 public class FoodConfig {
 
-    private static final File CONFIG_FILE = new File("config/cmyk/food_properties.json");
+    private static final Path CONFIG_PATH = FMLPaths.CONFIGDIR.get().resolve("cmyk/customs/food_properties.json");
     private static Map<String, FoodProperty> foodProperties = Collections.emptyMap();
 
     public static void loadConfig() {
-        if (!CONFIG_FILE.exists()) {
+        if (!Files.exists(CONFIG_PATH)) {
             ensureParentDirectory();
             writeDefaultConfig();
         }
 
-        try (FileReader reader = new FileReader(CONFIG_FILE)) {
+        try (FileReader reader = new FileReader(CONFIG_PATH.toFile())) {
             Gson gson = new Gson();
             Type type = new TypeToken<Map<String, FoodProperty>>() {}.getType();
             foodProperties = gson.fromJson(reader, type);
@@ -83,7 +84,7 @@ public class FoodConfig {
     }
 
     private static void ensureParentDirectory() {
-        Path parent = CONFIG_FILE.toPath().getParent();
+        Path parent = CONFIG_PATH.getParent();
         if (parent != null) {
             try {
                 Files.createDirectories(parent);
@@ -95,13 +96,6 @@ public class FoodConfig {
 
     private static void writeDefaultConfig() {
         Map<String, Map<String, Object>> defaults = new HashMap<>();
-        Map<String, Object> pumpkinSeeds = new HashMap<>();
-        pumpkinSeeds.put("hunger", 0);
-        pumpkinSeeds.put("saturation", 3.0f);
-        pumpkinSeeds.put("cooldown", 40);
-        pumpkinSeeds.put("useDuration", 40);
-        defaults.put("minecraft:pumpkin_seeds", pumpkinSeeds);
-
         Map<String, Object> wheatSeeds = new HashMap<>();
         wheatSeeds.put("hunger", 0);
         wheatSeeds.put("saturation", 1.0f);
@@ -109,7 +103,7 @@ public class FoodConfig {
         defaults.put("minecraft:wheat_seeds", wheatSeeds);
 
         Gson prettyGson = new GsonBuilder().setPrettyPrinting().create();
-        try (FileWriter writer = new FileWriter(CONFIG_FILE, StandardCharsets.UTF_8)) {
+        try (FileWriter writer = new FileWriter(CONFIG_PATH.toFile(), StandardCharsets.UTF_8)) {
             writer.write(prettyGson.toJson(defaults));
             writer.flush();
         } catch (IOException e) {
@@ -117,7 +111,6 @@ public class FoodConfig {
         }
 
         Map<String, FoodProperty> runtimeDefaults = new HashMap<>();
-        runtimeDefaults.put("minecraft:pumpkin_seeds", new FoodProperty(0, 3.0f, 40, 40));
         runtimeDefaults.put("minecraft:wheat_seeds", new FoodProperty(0, 1.0f, null, 50));
         foodProperties = runtimeDefaults;
     }

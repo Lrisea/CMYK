@@ -1,0 +1,40 @@
+{
+  "mappings": {
+    "dev/denismasterherobrine/afterdark/mixin/DripstoneHelperMixin": {
+      "canGenerateBase": "m_159639_(Lnet/minecraft/world/level/WorldGenLevel;Lnet/minecraft/core/BlockPos;I)Z",
+      "canGenerateOrLava": "m_159659_(Lnet/minecraft/world/level/LevelAccessor;Lnet/minecraft/core/BlockPos;)Z",
+      "scaleHeightFromRadius": "m_159623_(DDDD)D"
+    },
+    "dev/denismasterherobrine/afterdark/mixin/MixinFireBlock": {
+      "areBlocksAroundFlammable": "Lnet/minecraft/world/level/block/FireBlock;m_53485_(Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/core/BlockPos;)Z"
+    },
+    "dev/denismasterherobrine/afterdark/mixin/MixinLavaFluid": {
+      "canLightFire": "Lnet/minecraft/world/level/material/LavaFluid;m_76227_(Lnet/minecraft/world/level/LevelReader;Lnet/minecraft/core/BlockPos;)Z",
+      "hasBurnableBlock": "Lnet/minecraft/world/level/material/LavaFluid;m_76245_(Lnet/minecraft/world/level/LevelReader;Lnet/minecraft/core/BlockPos;)Z"
+    },
+    "dev/denismasterherobrine/afterdark/mixin/PlayerEntityNBTMixin": {
+      "readCustomDataFromNbt": "Lnet/minecraft/world/entity/player/Player;m_7378_(Lnet/minecraft/nbt/CompoundTag;)V",
+      "writeCustomDataToNbt": "Lnet/minecraft/world/entity/player/Player;m_7380_(Lnet/minecraft/nbt/CompoundTag;)V"
+    }
+  },
+  "data": {
+    "searge": {
+      "dev/denismasterherobrine/afterdark/mixin/DripstoneHelperMixin": {
+        "canGenerateBase": "m_159639_(Lnet/minecraft/world/level/WorldGenLevel;Lnet/minecraft/core/BlockPos;I)Z",
+        "canGenerateOrLava": "m_159659_(Lnet/minecraft/world/level/LevelAccessor;Lnet/minecraft/core/BlockPos;)Z",
+        "scaleHeightFromRadius": "m_159623_(DDDD)D"
+      },
+      "dev/denismasterherobrine/afterdark/mixin/MixinFireBlock": {
+        "areBlocksAroundFlammable": "Lnet/minecraft/world/level/block/FireBlock;m_53485_(Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/core/BlockPos;)Z"
+      },
+      "dev/denismasterherobrine/afterdark/mixin/MixinLavaFluid": {
+        "canLightFire": "Lnet/minecraft/world/level/material/LavaFluid;m_76227_(Lnet/minecraft/world/level/LevelReader;Lnet/minecraft/core/BlockPos;)Z",
+        "hasBurnableBlock": "Lnet/minecraft/world/level/material/LavaFluid;m_76245_(Lnet/minecraft/world/level/LevelReader;Lnet/minecraft/core/BlockPos;)Z"
+      },
+      "dev/denismasterherobrine/afterdark/mixin/PlayerEntityNBTMixin": {
+        "readCustomDataFromNbt": "Lnet/minecraft/world/entity/player/Player;m_7378_(Lnet/minecraft/nbt/CompoundTag;)V",
+        "writeCustomDataToNbt": "Lnet/minecraft/world/entity/player/Player;m_7380_(Lnet/minecraft/nbt/CompoundTag;)V"
+      }
+    }
+  }
+}

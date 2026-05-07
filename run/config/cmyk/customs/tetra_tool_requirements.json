@@ -1,0 +1,40 @@
+{
+    "defaultRequirements": {
+        "minEfficiency": 0.0,
+        "minTier": 0,
+        "requiredModules": [],
+        "denyMessage": "工具不符合挖掘要求"
+    },
+    "blockRequirements": {
+        "minecraft:stone": {
+            "minEfficiency": 1.0,
+            "minTier": 1,
+            "requiredModules": ["pickaxe"],
+            "denyMessage": "需要镐类工具"
+        },
+        "minecraft:iron_ore": {
+            "minEfficiency": 3.0,
+            "minTier": 2,
+            "requiredModules": ["pickaxe"],
+            "denyMessage": "需要更高效的镐类工具才能挖掘此方块"
+        },
+        "minecraft:diamond_ore": {
+            "minEfficiency": 5.0,
+            "minTier": 3,
+            "requiredModules": ["pickaxe"],
+            "denyMessage": "需要钻石级别或更高的镐类工具"
+        },
+        "#minecraft:mineable/pickaxe": {
+            "minEfficiency": 1.0,
+            "requiredModules": ["pickaxe"]
+        },
+        "#minecraft:mineable/axe": {
+            "minEfficiency": 1.0,
+            "requiredModules": ["axe"]
+        },
+        "#minecraft:mineable/shovel": {
+            "minEfficiency": 1.0,
+            "requiredModules": ["shovel"]
+        }
+    }
+}

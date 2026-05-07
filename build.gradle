@@ -139,6 +139,26 @@ repositories {
     // flatDir {
     //     dir 'libs'
     // }
+    maven {
+        name = "Kyrptonaught Maven"
+        url = "https://maven.kyrptonaught.dev"
+    }
+    maven {
+        name = "AzureDoom Mods"
+        url = "https://maven.azuredoom.com/mods"
+    }
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = "Modrinth"
+                url = "https://api.modrinth.com/maven"
+            }
+        }
+        forRepositories(fg.repository) // Only for ForgeGradle
+        filter {
+            includeGroup "maven.modrinth"
+        }
+    }
 }
 
 dependencies {
@@ -166,9 +186,13 @@ dependencies {
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
-    // 在dependencies部分添加
-    implementation 'com.google.code.gson:gson:2.10.1'
-    implementation 'commons-io:commons-io:2.11.0'
+    // Custom Portal API Reforged 依赖 - 使用文档中提供的正确坐标
+    implementation fg.deobf("net.kyrptonaught.customportalapi:customportalapi-reforged:${customportalapi_version}")
+
+    // Tetra 依赖 (运行时前置，编译时需要 API)
+    implementation fg.deobf("maven.modrinth:tetra:6.9.0")
+    // mutil 是 Tetra 的前置库
+    implementation fg.deobf("maven.modrinth:mutil:6.2.0")
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.
@@ -180,7 +204,8 @@ tasks.named('processResources', ProcessResources).configure {
                              forge_version       : forge_version, forge_version_range: forge_version_range,
                              loader_version_range: loader_version_range,
                              mod_id              : mod_id, mod_name: mod_name, mod_license: mod_license, mod_version: mod_version,
-                             mod_authors         : mod_authors, mod_description: mod_description,]
+                             mod_authors         : mod_authors, mod_description: mod_description,
+                             customportalapi_version: customportalapi_version, customportalapi_version_range: customportalapi_version_range]
 
     inputs.properties replaceProperties
 

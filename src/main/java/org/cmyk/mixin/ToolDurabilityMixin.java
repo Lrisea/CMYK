@@ -52,7 +52,7 @@ public class ToolDurabilityMixin {
             int unbreakingLevel = stack.getEnchantmentLevel(Enchantments.UNBREAKING);
             
             // 检查是否是首次调用hurt方法（非连锁调用）
-            if (amount == 1 && player != null) {
+            if ((amount == 1 || amount == 2) && player != null) {
                 // 使用BlockTracker获取玩家正在破坏的方块
                 Block targetedBlock = BlockTracker.getTargetBlock(player);
                 
@@ -76,6 +76,9 @@ public class ToolDurabilityMixin {
                 // 取消原始的伤害处理
                 cir.setReturnValue(false);
                 cir.cancel();
+
+                // 清理方块追踪记录，避免残留数据影响后续操作
+                BlockTracker.clearTargetBlock(player);
             }
         } catch (Exception e) {
             System.err.println("ToolDurabilityMixin error: " + e.getMessage());

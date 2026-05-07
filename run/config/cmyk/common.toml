@@ -1,0 +1,3 @@
+#Enable cooldown assignment after consuming food
+enableFoodCooldown = true
+

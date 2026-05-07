@@ -1,0 +1,28 @@
+{
+  "mappings": {
+    "org/cmyk/mixin/SeedsEatMixin": {
+      "finishUsingItem(Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/level/Level;Lnet/minecraft/world/entity/LivingEntity;)Lnet/minecraft/world/item/ItemStack;": "Lnet/minecraft/world/item/Item;m_5922_(Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/level/Level;Lnet/minecraft/world/entity/LivingEntity;)Lnet/minecraft/world/item/ItemStack;",
+      "getUseAnimation(Lnet/minecraft/world/item/ItemStack;)Lnet/minecraft/world/item/UseAnim;": "Lnet/minecraft/world/item/Item;m_6164_(Lnet/minecraft/world/item/ItemStack;)Lnet/minecraft/world/item/UseAnim;",
+      "useOn(Lnet/minecraft/world/item/context/UseOnContext;)Lnet/minecraft/world/InteractionResult;": "Lnet/minecraft/world/item/Item;m_6225_(Lnet/minecraft/world/item/context/UseOnContext;)Lnet/minecraft/world/InteractionResult;",
+      "getUseDuration(Lnet/minecraft/world/item/ItemStack;)I": "Lnet/minecraft/world/item/Item;m_8105_(Lnet/minecraft/world/item/ItemStack;)I",
+      "use(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/InteractionHand;)Lnet/minecraft/world/InteractionResultHolder;": "Lnet/minecraft/world/item/Item;m_7203_(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/InteractionHand;)Lnet/minecraft/world/InteractionResultHolder;"
+    },
+    "org/cmyk/mixin/ToolDurabilityMixin": {
+      "hurt": "Lnet/minecraft/world/item/ItemStack;m_220157_(ILnet/minecraft/util/RandomSource;Lnet/minecraft/server/level/ServerPlayer;)Z"
+    }
+  },
+  "data": {
+    "searge": {
+      "org/cmyk/mixin/SeedsEatMixin": {
+        "finishUsingItem(Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/level/Level;Lnet/minecraft/world/entity/LivingEntity;)Lnet/minecraft/world/item/ItemStack;": "Lnet/minecraft/world/item/Item;m_5922_(Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/level/Level;Lnet/minecraft/world/entity/LivingEntity;)Lnet/minecraft/world/item/ItemStack;",
+        "getUseAnimation(Lnet/minecraft/world/item/ItemStack;)Lnet/minecraft/world/item/UseAnim;": "Lnet/minecraft/world/item/Item;m_6164_(Lnet/minecraft/world/item/ItemStack;)Lnet/minecraft/world/item/UseAnim;",
+        "useOn(Lnet/minecraft/world/item/context/UseOnContext;)Lnet/minecraft/world/InteractionResult;": "Lnet/minecraft/world/item/Item;m_6225_(Lnet/minecraft/world/item/context/UseOnContext;)Lnet/minecraft/world/InteractionResult;",
+        "getUseDuration(Lnet/minecraft/world/item/ItemStack;)I": "Lnet/minecraft/world/item/Item;m_8105_(Lnet/minecraft/world/item/ItemStack;)I",
+        "use(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/InteractionHand;)Lnet/minecraft/world/InteractionResultHolder;": "Lnet/minecraft/world/item/Item;m_7203_(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/InteractionHand;)Lnet/minecraft/world/InteractionResultHolder;"
+      },
+      "org/cmyk/mixin/ToolDurabilityMixin": {
+        "hurt": "Lnet/minecraft/world/item/ItemStack;m_220157_(ILnet/minecraft/util/RandomSource;Lnet/minecraft/server/level/ServerPlayer;)Z"
+      }
+    }
+  }
+}

@@ -28,6 +28,8 @@ import org.cmyk.util.BlockTracker;
 import org.cmyk.config.BlockDurabilityConfig;
 import org.cmyk.foods.FoodConfig;
 import org.cmyk.config.CommonConfig;
+import org.cmyk.config.TetraToolConfig;
+import org.cmyk.event.TetraToolCheckHandler;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.config.ModConfig;
 
@@ -51,9 +53,10 @@ public class CMYKDurabilityOverhaul {
         
         // 只在构造函数中加载配置一次
         BlockDurabilityConfig.loadConfig();
+        TetraToolConfig.loadConfig();
 
-        // Register Forge COMMON config (generates toml in config directory)
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, CommonConfig.SPEC);
+        // Register Forge COMMON config (generates toml in config/cmyk/common.toml)
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, CommonConfig.SPEC, "cmyk/common.toml");
     }
     
     private void commonSetup(final FMLCommonSetupEvent event) {
@@ -72,7 +75,7 @@ public class CMYKDurabilityOverhaul {
         return BlockDurabilityConfig.isToolBlacklisted(itemName);
     }
 
-    // 实现让玩家破坏方块时额外消耗9点工具耐久的功能，增加方块黑名单（没有硬度的方块不消耗耐久）
+    // 实现让玩家破坏方块时检查工具耐久是否足够的功能，增加方块黑名单（没有硬度的方块不消耗耐久）
     // 1. 移除冗余的工具判断条件
     @SubscribeEvent
     public void onBlockBreakSpeed(PlayerEvent.BreakSpeed event) {
@@ -107,12 +110,23 @@ public class CMYKDurabilityOverhaul {
         
         // 保留宽松的工具判断，只检查物品是否可损坏
         if (!heldItem.isDamageableItem()) return;
-        
+
+        // === Tetra 工具要求检查 ===
+        if (TetraToolConfig.hasSpecificRequirement(brokenBlock)) {
+            net.minecraft.network.chat.Component denyMsg = TetraToolCheckHandler.check(
+                    player, heldItem, brokenBlock, blockState);
+            if (denyMsg != null) {
+                event.setNewSpeed(0);
+                player.displayClientMessage(denyMsg, true);
+                return;
+            }
+        }
+
         // 直接检查耐久，不需要再次判断isDamageableItem()
         // 这里的检查不是耐久消耗的实际基础值，和耐久消耗没有关系
 
         int currentDurability = heldItem.getMaxDamage() - heldItem.getDamageValue();
-        int requiredDurability = 9; // 额外消耗的9点耐久值
+        int requiredDurability = BlockDurabilityConfig.getDurabilityCost(brokenBlock);
         
         if (currentDurability < requiredDurability) {
             event.setNewSpeed(0); // 设置挖掘速度为0，使玩家无法挖掘

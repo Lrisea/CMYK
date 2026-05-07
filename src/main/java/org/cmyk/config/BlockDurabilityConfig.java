@@ -3,7 +3,10 @@ package org.cmyk.config;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.GsonBuilder;
+import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -20,10 +23,11 @@ import java.util.Map;
 import java.util.Set;
 
 public class BlockDurabilityConfig {
-    private static final Path CONFIG_PATH = FMLPaths.CONFIGDIR.get().resolve("cmyk/block_durability_config.json");
+    private static final Path CONFIG_PATH = FMLPaths.CONFIGDIR.get().resolve("cmyk/customs/block_durability_config.json");
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final String DEFAULT_CONFIG_RESOURCE = "defaultConfig/default_block_durability_config.json";
     private static Map<String, Integer> blockDurabilityCosts = new HashMap<>();
+    private static Map<String, Integer> tagDurabilityCosts = new HashMap<>();
     private static Set<String> toolBlacklist = new HashSet<>();
     private static int defaultCost = 10;
 
@@ -60,7 +64,12 @@ public class BlockDurabilityConfig {
             if (config.has("blockDurabilityCosts")) {
                 JsonObject blockCosts = config.getAsJsonObject("blockDurabilityCosts");
                 for (String blockId : blockCosts.keySet()) {
-                    blockDurabilityCosts.put(blockId, blockCosts.get(blockId).getAsInt());
+                    int cost = blockCosts.get(blockId).getAsInt();
+                    if (blockId.startsWith("#")) {
+                        tagDurabilityCosts.put(blockId.substring(1), cost);
+                    } else {
+                        blockDurabilityCosts.put(blockId, cost);
+                    }
                 }
             }
             
@@ -140,6 +149,7 @@ public class BlockDurabilityConfig {
     private static void initMinimalDefaultConfig() {
         // 设置最小默认值，确保功能正常
         blockDurabilityCosts.clear();
+        tagDurabilityCosts.clear();
         toolBlacklist.clear();
         // 添加默认工具黑名单
         toolBlacklist.add("minecraft:fishing_rod");
@@ -151,10 +161,26 @@ public class BlockDurabilityConfig {
     
     // 获取指定方块的耐久消耗值
     public static int getDurabilityCost(Block block) {
+        // 1. 先查精确方块ID
         ResourceLocation blockId = ForgeRegistries.BLOCKS.getKey(block);
         if (blockId != null && blockDurabilityCosts.containsKey(blockId.toString())) {
             return blockDurabilityCosts.get(blockId.toString());
         }
+
+        // 2. 再查标签匹配
+        if (blockId != null) {
+            for (Map.Entry<String, Integer> entry : tagDurabilityCosts.entrySet()) {
+                ResourceLocation tagRl = ResourceLocation.tryParse(entry.getKey());
+                if (tagRl != null) {
+                    TagKey<Block> tagKey = BlockTags.create(tagRl);
+                    Holder.Reference<Block> holder = ForgeRegistries.BLOCKS.getDelegateOrThrow(block);
+                    if (holder.is(tagKey)) {
+                        return entry.getValue();
+                    }
+                }
+            }
+        }
+
         return defaultCost;
     }
     
