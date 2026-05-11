@@ -1,1 +1,0 @@
-org/cmyk/mixin/DurabilityEnchantmentMixin shouldIgnoreDurabilityDrop (Lnet/minecraft/world/item/ItemStack;ILnet/minecraft/util/RandomSource;)Z m_220282_
